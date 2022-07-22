@@ -11,6 +11,8 @@ from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
 from random import randint
 import numpy as np
+from functools import partial
+
 
 class MedicalScenario(App):
     def build(self):
@@ -23,7 +25,7 @@ class MedicalScenario(App):
         self.board = Arduino("COM8")
         self.states = ['crying','screaming','whining','dead'] 
         self.scenario = "neutral"
-        print(self.scenario)
+        self.guess ="nothing"
         self.connectguard = True
         # image widget
         self.window.add_widget(Image(source="bacon.png"))
@@ -45,6 +47,7 @@ class MedicalScenario(App):
         # self.window.add_widget(self.user)
         
         #button widgets
+        
         self.buttonScenario = Button(
             text="Start Scenario",
             size_hint = (1,0.5),
@@ -60,8 +63,7 @@ class MedicalScenario(App):
             bold = True,
             background_color = "#00FFCE"
             )
-         
-        self.buttonScreaming.bind(on_press=self.correctCallBack)
+        self.buttonScreaming.bind(on_press=partial(self.changeState,bvalue='screaming'))
         self.window.add_widget(self.buttonScreaming)
         
         self.buttonCrying = Button(
@@ -70,10 +72,7 @@ class MedicalScenario(App):
             bold = True,
             background_color = "#00FFCE"
             )
-        if self.scenario == "crying":
-            self.buttonCrying.bind(on_press=self.correctCallBack)
-        else:
-            self.buttonCrying.bind(on_press=self.wrongCallBack)
+        self.buttonCrying.bind(on_press=partial(self.changeState, bvalue ='crying'))
         self.window.add_widget(self.buttonCrying)
 
         self.buttonWhining = Button(
@@ -82,10 +81,7 @@ class MedicalScenario(App):
             bold = True,
             background_color = "#00FFCE"
             )
-        if self.scenario == "whining":
-            self.buttonWhining.bind(on_press=self.correctCallBack)
-        else:
-            self.buttonWhining.bind(on_press=self.wrongCallBack)
+        self.buttonWhining.bind(on_press=partial(self.changeState, bvalue ='whining'))
         self.window.add_widget(self.buttonWhining)
         
         self.buttonDead = Button(
@@ -94,10 +90,7 @@ class MedicalScenario(App):
             bold = True,
             background_color = "#00FFCE"
             )
-        if self.scenario == "dead":
-            self.buttonDead.bind(on_press=self.correctCallBack)
-        else:
-            self.buttonDead.bind(on_press=self.wrongCallBack)
+        self.buttonDead.bind(on_press=partial(self.changeState, bvalue ='dead'))
         self.window.add_widget(self.buttonDead)
 
         return self.window
@@ -112,8 +105,8 @@ class MedicalScenario(App):
             time.sleep(4)
             board.digital[9].write(0)
             time.sleep(1)
+    
     def ledOn(self,instance):
-
         self.scenario = np.random.choice(self.states,size=1)
 
         if self.scenario == "crying":
@@ -145,17 +138,48 @@ class MedicalScenario(App):
     def callback(self,instance):
         self.greeting.text = "Hello " + self.user.text + "!",
         
-    
-    def correctCallBack(self,instance):
+    def changeState(self,instance,bvalue):
+        if bvalue == "dead":
+            self.guess="dead"
+            print(self.guess)
+        if bvalue == "screaming":
+            self.guess="screaming"
+            print(self.guess)
+        if bvalue == "whining":
+            self.guess="whining"
+            print(self.guess)
+        if bvalue == "crying":
+            self.guess="crying"
+            print(self.guess)
+        
+        checkAnswer =self.answerGuess()
+        if checkAnswer:
+            self.correctCallBack()
+        else:
+            self.wrongCallBack()
+
+
+
+    def  answerGuess(self):
+        guess = self.guess
+        checkAnswer = self.scenario
+        print('test')
+        if guess == checkAnswer:
+            return True
+        else:
+            return False
+
+    def correctCallBack(self):
         self.greeting.color='#00FFCE'
         self.greeting.text = "Correct!"
-    def wrongCallBack(self,instance):
+
+    def wrongCallBack(self):
         self.greeting.color='#FF0000'
         self.greeting.text = "Wrong!"
 if __name__ == "__main__":
     MedicalScenario().run()
 
-
+## unbind all in scenario button
 # import time
 # from pyfirmata import Arduino, util
 
