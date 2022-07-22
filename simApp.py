@@ -108,19 +108,22 @@ class MedicalScenario(App):
     
     def ledOn(self,instance):
         self.scenario = np.random.choice(self.states,size=1)
-
+        print(self.scenario)
         if self.scenario == "crying":
             self.board.digital[8].write(1)
             self.board.digital[9].write(0)
             self.board.digital[10].write(0)
+            playsound('C:/Users/NOMKO3/Random_scripts/PythonApp/ScenarioApp/tunes/NooDV.mp3')
         if self.scenario == "screaming":
             self.board.digital[9].write(1)
             self.board.digital[10].write(0)
             self.board.digital[8].write(0)
+            playsound('C:/Users/NOMKO3/Random_scripts/PythonApp/ScenarioApp/tunes/UseTheForce.mp3')
         if self.scenario == "whining":
             self.board.digital[8].write(0)
             self.board.digital[9].write(0)
             self.board.digital[10].write(1)
+            playsound('C:/Users/NOMKO3/Random_scripts/PythonApp/ScenarioApp/tunes/IAmYourFatherAudio.mp3')
     
     def ledClear(self,instance):
         self.board.digital[8].write(0)
@@ -137,7 +140,7 @@ class MedicalScenario(App):
 
     def callback(self,instance):
         self.greeting.text = "Hello " + self.user.text + "!",
-        
+        print(self.scenario)
     def changeState(self,instance,bvalue):
         if bvalue == "dead":
             self.guess="dead"
